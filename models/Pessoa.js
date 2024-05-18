@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema;
 
-const Pessoa = new Schema({
+const PessoaSchemea = new Schema({
 nome: {
     type: String,
     required: true
@@ -38,4 +38,4 @@ camp: {
 })
 
 
-mongoose.model("pessoa",Pessoa)
+mongoose.model("pessoa",PessoaSchemea)

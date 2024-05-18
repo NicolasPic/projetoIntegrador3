@@ -4,7 +4,7 @@ const handlebars = require('express-handlebars');
 const bodyParser = require("body-parser");
 const app = express();
 const rota = require('./routes/routes');
-const pessoa = require('../models/Pessoa')
+const pessoa = require('./models/Pessoa')
 const mongoose = require("mongoose");
 
 // Configurações
@@ -12,11 +12,16 @@ const mongoose = require("mongoose");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 // Handlebars
-app.engine('handlebars', handlebars.create({defaultLayout: 'main'}).engine); 
+app.engine('handlebars', handlebars.engine ({
+    defaultLayout: 'main', runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true
+    }
+}))
 app.set('view engine', 'handlebars');
 // Mongoose
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost//db_Projeto").then(() => {
+mongoose.connect("mongodb://localhost/db_Projeto").then(() => {
     console.log("Conectado ao MongoDB");
 }).catch((err) => {
     console.log("Erro de conexão: " + err);
