@@ -3,14 +3,42 @@ const router = express.Router();
 const mongoose = require("mongoose")
 require('../models/Pessoa');
 const Pessoa = mongoose.model("pessoa")
+const passport = require("passport")
 
 router.get('/', (req, res) => {
     res.send("Pagina principal");
 });
+//login
+router.get('/login', (req, res) => {
+    res.render("layouts/login");
+});
+
+router.post('/login', (req, res, next) => {
+    passport.authenticate("local", {
+            successRedirect: "/routes/home",
+            failureRedirect: "/routes/login",
+            failureFlash: true
+    })(req, res, next)
+});
+
 //efetuou o login 
-router.get('/logado', (req, res) => {
+router.get('/home', (req, res) => {
     res.send("home principal");
 });
+
+// Rota para testar se o login está funcionando
+router.get('/testlogin', (req, res) => {
+    if (req.isAuthenticated()) {
+        res.send("Login bem-sucedido! Usuário logado.");
+    } else {
+        res.send("Você não está logado.");
+    }
+});
+
+router.get('/profile', (req, res) => {
+    res.send(`Nome do usuário logado: ${req.user.nome}`);
+});
+
 //form de nova conta 
 router.get('/novaconta/form', (req, res) => {
     res.render("layouts/addpessoa");
@@ -40,31 +68,43 @@ router.get('/logado/ajuste/:id', (req, res) => {
         });
 });
 
-//resposta do formulario de criar nova conta
+// Resposta do formulário de criar nova conta
 router.post('/novaconta/criada', (req, res) => {
-    
-    const novaPessoa = new Pessoa({
-        nome: req.body.nome,
-        email: req.body.email,
-        cpf: req.body.cpf,
-        forca: 0,
-        velocidade: 0,
-        agilidade: 0
-    });
-
-    new Pessoa(novaPessoa).save().then(() => {
-        console.log("Sucesso");
-        res.send("Sucesso ao salvar pessoa.");
-        res.redirect('/');
+    Pessoa.findOne({cpf: req.body.cpf}).then((pessoa) => {
+        if (pessoa) {
+           req.flash("error_msg", "Já existe uma conta com esse CPF");
+           res.redirect("/routes/novaconta/form");
+        } else {
+            const novaPessoa = new Pessoa({
+                nome: req.body.nome,
+                email: req.body.email,
+                cpf: req.body.cpf,
+                forca: 0,
+                velocidade: 0,
+                agilidade: 0,
+                camp: 0,
+                rank: 0
+            });
+        
+            novaPessoa.save().then(() => {
+                req.flash("success_msg", "Conta criada com sucesso");
+                res.redirect("/");
+            }).catch((err) => {
+                req.flash("error_msg", "Erro ao criar conta, tente novamente mais tarde.");
+                res.redirect("/novaconta/form");
+            });
+        }
     }).catch((err) => {
-        console.log("erro");
-        console.error("Erro:", err);
-        res.status(500).send("Erro ao salvar pessoa.");
+        console.error("Erro interno:", err);
+        req.flash("error_msg", "Erro interno");
+        res.redirect("/");
     });
 });
+
+
 //salva os dados no banco
 router.post('/logado/salvar', (req, res) => {
-    const id = req.body.id; // Recupera o ID do corpo da requisição
+    const id = req.user.id; // Recupera o ID do corpo da requisição
 
     // Verifica se o ID fornecido é um ObjectId válido
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -79,10 +119,12 @@ router.post('/logado/salvar', (req, res) => {
             }
 
             // Atualiza os campos da pessoa
+            const agi = (req.body.forca * 0.5) + (req.body.velocidade * 0.5);
             pessoa.forca = req.body.forca;
             pessoa.velocidade = req.body.velocidade;
-            pessoa.agilidade = (req.body.forca * 0.5) + (req.body.velocidade * 0.5);
-
+            pessoa.agilidade = agi;
+            pessoa.camp = req.body.camp;
+            pessoa.rank = req.body.forca + req.body.velocidade + agi + req.body.camp ;
             // Salva as alterações no banco de dados
             return pessoa.save();
         })
@@ -122,6 +164,16 @@ router.get('/logado/busca/:id', (req, res) => {
             console.error("Erro ao buscar pessoa:", error);
             res.status(500).send({ message: "Erro ao buscar pessoa." });
         });
+});
+
+router.get('/lista', (req, res) => {
+    // Find para listar todas
+    Pessoa.find().then((pessoas) => {
+        res.render('layouts/lista', { pessoas: pessoas.map(pessoa => pessoa.toJSON()) });
+    }).catch((erro) => {
+        req.flash('error_msg', 'Houve um erro ao listar as categorias');
+        res.redirect('/'); // Redireciona para evitar que o usuário fique em uma página carregando indefinidamente
+    });
 });
 
 

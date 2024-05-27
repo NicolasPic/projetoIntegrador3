@@ -6,6 +6,11 @@
     <title>Document</title>
 </head>
 <body>
+    {{#if error}}
+        <div class="alert alert-danger">{{error}}</div>
+    {{/if}}
+
     {{{body}}}
+    {{>_msg}}
 </body>
 </html>
