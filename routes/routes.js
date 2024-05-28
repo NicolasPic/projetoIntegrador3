@@ -44,8 +44,8 @@ router.get('/novaconta/form', (req, res) => {
     res.render("layouts/addpessoa");
 });
 //aba de ajustar os dados do perfil
-router.get('/logado/ajuste/:id', (req, res) => {
-    const id = req.params.id;
+router.get('/logado/ajuste', (req, res) => {
+    const id = req.user.id;
 
     // Verifica se o ID fornecido é um ObjectId válido
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -88,7 +88,7 @@ router.post('/novaconta/criada', (req, res) => {
         
             novaPessoa.save().then(() => {
                 req.flash("success_msg", "Conta criada com sucesso");
-                res.redirect("/");
+                res.redirect("/routes/home");
             }).catch((err) => {
                 req.flash("error_msg", "Erro ao criar conta, tente novamente mais tarde.");
                 res.redirect("/novaconta/form");
@@ -118,13 +118,19 @@ router.post('/logado/salvar', (req, res) => {
                 return res.status(404).send({ message: "Pessoa não encontrada." });
             }
 
-            // Atualiza os campos da pessoa
-            const agi = (req.body.forca * 0.5) + (req.body.velocidade * 0.5);
-            pessoa.forca = req.body.forca;
-            pessoa.velocidade = req.body.velocidade;
+            // Converte os valores para inteiros
+            const forca = parseInt(req.body.forca, 10);
+            const velocidade = parseInt(req.body.velocidade, 10);
+            const camp = parseInt(req.body.camp, 10);
+
+            // Calcula agilidade e rank
+            const agi = Math.round((forca * 0.5) + (velocidade * 0.5));
+            pessoa.forca = forca;
+            pessoa.velocidade = velocidade;
             pessoa.agilidade = agi;
-            pessoa.camp = req.body.camp;
-            pessoa.rank = req.body.forca + req.body.velocidade + agi + req.body.camp ;
+            pessoa.camp = camp;
+            pessoa.rank = forca + velocidade + agi + camp;
+
             // Salva as alterações no banco de dados
             return pessoa.save();
         })
@@ -167,13 +173,37 @@ router.get('/logado/busca/:id', (req, res) => {
 });
 
 router.get('/lista', (req, res) => {
-    // Find para listar todas
-    Pessoa.find().then((pessoas) => {
-        res.render('layouts/lista', { pessoas: pessoas.map(pessoa => pessoa.toJSON()) });
-    }).catch((erro) => {
-        req.flash('error_msg', 'Houve um erro ao listar as categorias');
-        res.redirect('/'); // Redireciona para evitar que o usuário fique em uma página carregando indefinidamente
-    });
+    const userId = req.user.id;
+
+    // Verifica se o ID do usuário logado é um ObjectId válido
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        req.flash('error_msg', 'ID inválido.');
+        return res.redirect('/');
+    }
+
+    // Encontra a pessoa logada para obter o rank
+    Pessoa.findById(userId)
+        .then(user => {
+            if (!user) {
+                req.flash('error_msg', 'Usuário não encontrado.');
+                return res.redirect('/');
+            }
+
+            const rankReferencia = user.rank;
+            const limiteInferior = rankReferencia * 0.9;
+            const limiteSuperior = rankReferencia * 1.1;
+
+            // Filtra as pessoas com base no rank
+            return Pessoa.find({ rank: { $gte: limiteInferior, $lte: limiteSuperior } });
+        })
+        .then(pessoas => {
+            res.render('layouts/lista', { pessoas: pessoas.map(pessoa => pessoa.toJSON()) });
+        })
+        .catch(erro => {
+            console.error("Erro ao listar pessoas:", erro);
+            req.flash('error_msg', 'Houve um erro ao listar as pessoas.');
+            res.redirect('/'); // Redireciona para evitar que o usuário fique em uma página carregando indefinidamente
+        });
 });
 
 
