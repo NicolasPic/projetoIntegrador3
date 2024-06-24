@@ -1,19 +1,123 @@
-<form action="/routes/logado/salvar" method="POST">
-   <input type="hidden" name="id" value="{{pessoa._id}}">
-    <!-- Campo de Força -->
-    <label for="forca">Força: </label>
-    <input type="number" id="forca" name="forca" placeholder="Força" required>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Edição</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .card {
+            width: 80%;
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .btn-save {
+            /* Estilo para o botão Salvar */
+            color: #fff;
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-save:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .btn-back {
+            /* Estilo para o botão Voltar */
+            color: #fff;
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-back:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-body">
+            <h2>Formulário de Edição</h2>
+            <form action="/routes/logado/salvar" method="POST">
+                <input type="hidden" name="id" value="{{ pessoa._id }}">
+                
+                <!-- Campo de Força -->
+                <div class="form-group">
+                    <label for="forca">Força (entre 1 e 10): </label>
+                    <input type="range" id="forca" name="forca" class="form-control-range" min="1" max="10" required>
+                    <output for="forca" id="forcaOutput">5</output>
+                </div>
+                
+                <!-- Campo de Velocidade -->
+                <div class="form-group">
+                    <label for="velocidade">Velocidade (entre 1 e 10): </label>
+                    <input type="range" id="velocidade" name="velocidade" class="form-control-range" min="1" max="10" required>
+                    <output for="velocidade" id="velocidadeOutput">5</output>
+                </div>
+                
+                <!-- Campo de Campeonato -->
+                <div class="form-group">
+                    <label for="camp">Campeonato:</label>
+                    <select id="camp" name="camp" class="form-control" required>
+                        <option value="0">NÃO</option>
+                        <option value="2">D</option>
+                        <option value="4">C</option>
+                        <option value="6">B</option>
+                        <option value="8">A</option>
+                        <option value="10">Pro</option>
+                    </select>
+                </div>
+                
+                <!-- Botões -->
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-success btn-save">Salvar</button>
+                    <a href="/routes/home" class="btn btn-secondary btn-back">Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
     
-    <!-- Campo de Velocidade -->
-    <label for="velocidade">Velocidade: </label>
-    <input type="number" id="velocidade" name="velocidade" placeholder="Velocidade" required>
-
-     <label for="camp">Campeonato: </label>
-    <input type="number" id="camp" name="camp" placeholder="Camp" required>
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     
-    
-    <button type="submit" class="btn btn-success">Salvar</button>
-</form>
-
+    <script>
+        // Atualiza o valor do output conforme o valor do slider de Força
+        const forcaSlider = document.getElementById('forca');
+        const forcaOutput = document.getElementById('forcaOutput');
+        forcaOutput.textContent = forcaSlider.value;
+        
+        forcaSlider.oninput = function() {
+            forcaOutput.textContent = this.value;
+        };
+        
+        // Atualiza o valor do output conforme o valor do slider de Velocidade
+        const velocidadeSlider = document.getElementById('velocidade');
+        const velocidadeOutput = document.getElementById('velocidadeOutput');
+        velocidadeOutput.textContent = velocidadeSlider.value;
+        
+        velocidadeSlider.oninput = function() {
+            velocidadeOutput.textContent = this.value;
+        };
+    </script>
+</body>
+</html>
 
 

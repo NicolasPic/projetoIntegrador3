@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulação de Chance de Vitória</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-size: 1rem; /* Tamanho base do texto */
+        }
+        .card {
+            max-width: 600px; /* Largura máxima do card para centralizar conteúdo */
+            margin: 20px auto; /* Margem para centralizar na página */
+        }
+        .card-body {
+            padding: 20px; /* Espaçamento interno do card */
+        }
+        .btn {
+            font-size: 0.9rem; /* Tamanho do texto dos botões */
+        }
+        h2 {
+            font-size: 1.5rem; /* Tamanho do título principal */
+            margin-bottom: 20px; /* Espaçamento inferior do título */
+        }
+        p {
+            font-size: 0.95rem; /* Tamanho do texto dos parágrafos */
+            margin-bottom: 5px; /* Espaçamento inferior dos parágrafos */
+        }
+        form {
+            margin-top: 20px; /* Espaçamento superior do formulário */
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-body">
+            <h2>Bem-vindo, {{ user.nome }}</h2>
+            <p>Aqui você pode simular sua chance de vitória com base nos seus atributos e nos do seu oponente</p>
+            <hr>
+            <div>
+                <p><strong>Velocidade:</strong> {{user.velocidade}}</p>
+                <p><strong>Força:</strong> {{user.forca}}</p>
+                <p><strong>Agilidade:</strong> {{user.agilidade}}</p>
+                <p><strong>Campeonato:</strong> {{user.camp}}</p>
+                <p><strong>Rank:</strong> {{user.rank}}</p>
+            </div>
+            <hr>
+            <form action="/routes/calcular-chance" method="POST" id="form-simulacao">
+                <div class="form-group">
+                    <label for="velocidade">Velocidade: </label>
+                    <input type="number" id="velocidade" name="velocidade" class="form-control" placeholder="Insira sua velocidade" value="{{user.velocidade}}" required>
+                </div>
+                <div class="form-group">
+                    <label for="forca">Força: </label>
+                    <input type="number" id="forca" name="forca" class="form-control" placeholder="Insira sua força" value="{{user.forca}}" required>
+                </div>
+                   <!-- Campo de Campeonato -->
+                <div class="form-group">
+                    <label for="camp">Campeonato:</label>
+                    <select id="camp" name="camp" class="form-control" required>
+                        <option value="0">NÃO</option>
+                        <option value="2">D</option>
+                        <option value="4">C</option>
+                        <option value="6">B</option>
+                        <option value="8">A</option>
+                        <option value="10">Pro</option>
+                    </select>
+                </div>
+                <input type="hidden" id="agilidade" name="agilidade" value="{{user.agilidade}}">
+                <input type="hidden" id="rank" name="rank" value="{{user.rank}}">
+                <button type="submit" class="btn btn-success">Calcular Chance</button>
+                <a href="/routes/home" class="btn btn-primary ml-2">Voltar para Home</a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('form-simulacao').addEventListener('submit', function(e) {
+            e.preventDefault(); // Previne o envio padrão do formulário
+            
+            // Captura os valores dos campos
+            const velocidade = parseFloat(document.getElementById('velocidade').value);
+            const forca = parseFloat(document.getElementById('forca').value);
+            const camp = parseFloat(document.getElementById('camp').value);
+            
+            // Calcula a agilidade e o rank
+            const agilidade = (velocidade * 0.5) + (forca * 0.5);
+            const rank = velocidade + forca + agilidade + camp;
+            
+            // Define os valores nos campos hidden
+            document.getElementById('agilidade').value = agilidade;
+            document.getElementById('rank').value = rank;
+            
+            // Submete o formulário
+            this.submit();
+        });
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Chance de Vitória</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -19,29 +19,24 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             background-color: #fff;
+            text-align: center;
         }
-        .btn-new-account {
+        .btn-back {
             margin-top: 10px;
-            display: block;
         }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="card-body">
-            <form action="/routes/login" method="post">
-                <div class="form-group">
-                    <label for="cpf">Cpf: </label>
-                    <input type="text" class="form-control" name="cpf" required>
-                </div>
-                <button type="submit" class="btn btn-success">Login</button>
-            </form>
-            <a href="/routes/novaconta/form" class="btn btn-primary btn-new-account">Criar Nova Conta</a>
+            <h1>Chance de Vitória</h1>
+            <p>A sua chance de vitória é de <strong>{{chanceVitoria}}%</strong></p>
+            <a href="/routes/logado/machine" class="btn btn-primary">Ir para a Máquina</a>
         </div>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-

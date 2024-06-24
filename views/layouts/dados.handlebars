@@ -3,45 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Dados da Pessoa</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
         }
         .card {
+            width: 80%;
+            max-width: 600px;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             background-color: #fff;
-        }
-        .btn-new-account {
-            margin-top: 10px;
-            display: block;
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="card-body">
-            <form action="/routes/login" method="post">
-                <div class="form-group">
-                    <label for="cpf">Cpf: </label>
-                    <input type="text" class="form-control" name="cpf" required>
-                </div>
-                <button type="submit" class="btn btn-success">Login</button>
-            </form>
-            <a href="/routes/novaconta/form" class="btn btn-primary btn-new-account">Criar Nova Conta</a>
+            <h2>Dados da Pessoa</h2>
+            <p><strong>Nome:</strong> {{pessoa.nome}}</p>
+            <p><strong>Email:</strong> {{pessoa.email}}</p>
+            <p><strong>Velocidade:</strong> {{pessoa.velocidade}}</p>
+            <p><strong>Força:</strong> {{pessoa.forca}}</p>
+            <p><strong>Agilidade:</strong> {{pessoa.agilidade}}</p>
+            <p><strong>Campeonato:</strong> {{pessoa.camp}}</p>
+            <p><strong>Rank:</strong> {{pessoa.rank}}</p>
+            <a href="/routes/logado/lista" class="btn btn-secondary">Voltar</a>
         </div>
     </div>
+
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-
